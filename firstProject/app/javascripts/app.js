@@ -10,9 +10,6 @@ import FirstProject_artifacts from '../../build/contracts/FirstProject.json'
 
 var FirstProject = contract(FirstProject_artifacts);
 
-// The following code is simple to show off interacting with your contracts.
-// As your needs grow you will likely need to change its form and structure.
-// For application bootstrapping, check out window.addEventListener below.
 var accounts;
 var account;
 var address;
