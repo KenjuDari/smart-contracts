@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test project</title>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="./app.js"></script>
+</head>
+<body>
+
+  <h1>Storage</h1>
+  <div class="section">
+    <label>Записать<input type="text" id="param" value="123" /> </label><br>
+      <button id='setParam' onclick="App.setParam()">Положить</button><br>
+  </div>
+  <hr>
+
+  <div class="section">
+    В переменной: <output type="text" id="getParam"> </output><br>
+      <button id='getParamBut' onclick="App.getParam()">Получить</button><br>      
+  </div>
+
+  <div class="section">
+    <button id='writeBlockChain' onclick='App.writeData()'>Write in blockchain</button>
+  </div>
+  <hr>
+</body>
+</html>
