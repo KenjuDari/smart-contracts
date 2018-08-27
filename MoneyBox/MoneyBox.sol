@@ -1,5 +1,7 @@
 pragma solidity ^0.4.24;
 
+import "./SafeMath.sol";
+
 contract FiatContract {
   function ETH(uint _id) constant returns (uint256);
   function USD(uint _id) constant returns (uint256);
@@ -10,7 +12,8 @@ contract FiatContract {
 
 contract MoneyBox
 {
-    uint256 public totalSupply = 1 ether;
+    using SafeMath for uint;
+    
     address public owner;
     uint public start;
     uint public limit;
@@ -32,9 +35,21 @@ contract MoneyBox
         // $0.01 * 10^8 = $1 000 000.00
         limit = ethCent * 10**8;
         
-        require(((now - start) < 31556926 * 3) || (totalSupply > limit));
-        // owner.transfer(this.balance);
+        require(((now - start) > 31556926 * 3) || (address(this).balance > limit));
+        owner.transfer(address(this).balance);
         return true;
     }
     
+    function remainingDays() public returns(uint)
+    {
+        // 3 года - прошедшее время в секундах
+        uint sec = (31556926 * 3) - (now - start);
+        // 86400 - 1 день unix времени
+        return sec.div(86400);
+    }
+    
+    function balance() public returns(uint)
+    {
+        return address(this).balance;
+    }
 }
