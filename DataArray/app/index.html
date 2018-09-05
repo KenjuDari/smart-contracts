@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test project</title>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="./app.js"></script>
+</head>
+<body>
+
+  <h1>Storage</h1>
+  <div class="section">
+    Token: <input type="text" id="param" value="tok" /> <input type="text" id="param2" value="10" />*10^2 % <br>
+      <button id='setParam' onclick="App.setParam()">Записать</button><br>
+  </div>
+  <hr>
+
+  <div class="section">
+    Get data across ID: <input type="text" id="single" value="123"/>
+    <output type="text" id="getParamStr" value=""> </output><br>
+      <button id='getParamBut2' onclick="App.getParamSingle()">Получить</button><br>      
+  </div>
+
+  <div class="section">
+    Get amount of token type: <output type="text" id="getLength" value=""> </output><br>
+      <button id='getParamBut2' onclick="App.getAmount()">Получить</button><br>      
+  </div>
+
+  <div class="section">
+      String of array: <output type="text" id="stringArray" value=""> </output><br> 
+        <button id='getParamBut3' onclick="App.getStr()">Получить</button><br>      
+    </div>
+
+  <div class="section">
+    <H3>Event</H3>
+    <pre>Token      Процент     id      Время записи
+    <output type="text" id="array" value=""> </output>  </pre><br> 
+  </div>
+  <hr>
+</body>
+</html>
