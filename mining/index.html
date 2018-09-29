@@ -1,0 +1,32 @@
+<html>
+    <head>
+          <script type="text/javascript" src="src.js"></script>
+          <!--other script and also external css included over here-->
+    </head>
+    <body>
+        Test
+		<script>
+		
+		function makeRandomId() {
+		  var text = "";
+		  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+		  for (var i = 0; i < 30; i++)
+			text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+		  return text;
+		}
+		
+		hash='empty';
+		message='jschain_0x5244584EF31a3388909aB9c6f8f82d5C5c1a93B1_';
+		while (hash.charAt(0) != 'f' || hash.charAt(1) != 'f' ){
+			message_with_random=message + makeRandomId();
+			hash=keccak256(message_with_random);
+		}
+		
+			console.log(message_with_random);
+			console.log(hash);
+		
+		</script>
+    </body>
+    </html>
