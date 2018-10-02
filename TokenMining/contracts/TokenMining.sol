@@ -11,7 +11,7 @@ contract TokenMining {
     uint timeOfLastProof;                             // Variable to keep track of when rewards were given
     uint difficulty = 1;                         // Quantity of "f" at the beginning hash
     uint constant lengthDiff = 2**256 - 1;
-    string message = "jschain_0x5244584EF31a3388909aB9c6f8f82d5C5c1a93B1_";
+    string message = "example_string";
     string str;
     
     event newHash(bytes32 _hash, string _str, address _sender, string _nonce, uint _idBlock);
@@ -28,7 +28,6 @@ contract TokenMining {
         str = foo(nonce, message);
         str = foo(str, uint2str(idBlock));
         str = foo(str, currentNonce);
-        // str = nonce + message + idBlock + currentNonce
         bytes32 hash = sha3(str);
         require(hash == _newHash, "Hash isn't true");
         uint currentDiff = 16**(64 - difficulty);

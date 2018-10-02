@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Token Mining</title>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="./app.js"></script>
+</head>
+<body>
+  <h1>Token Mining</h1>
+  <div class="section">
+    Address of sender: <output type="text" id="param" value=""> </output><br>
+    Last block: <output type="text" id="param2" value=""> </output><br>
+    100th last block: <output type="text" id="param3" value=""> </output><br>
+    Difficulty: <output type="text" id="param4" value=""> </output><br>
+    CurrentNonce: <output type="text" id="param5" value=""> </output><br>
+    Message: <output type="text" id="param6" value=""> </output><br>
+
+      <button id='setParam' onclick="App.getParam()">Получить текущие данные</button><br>
+      <button id='setParam' onclick="App.mining()">Запустить/остановить майнинг</button><br>
+  </div>
+
+  <h2>Генерация хешей</h2>
+  <div class="section">
+      <output type="text" id="events" value=""> </output><br>
+    </div>
+  <hr>
+</body>
+</html>
