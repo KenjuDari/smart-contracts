@@ -3,17 +3,15 @@ import '../styles/app.css'
 
 // Import libraries we need.
 import { default as Web3 } from 'web3'
-import { default as contract } from 'truffle-contract'
 import { keccak256 } from 'js-sha3'
 
-// Import our contract artifacts and turn them into usable abstractions.
-import Storage_artifacts from '../../build/contracts/TokenMining.json'
+var contractMining
 
-var Storage = contract(Storage_artifacts)
-
-var accounts
+var provider
 var account
-var address
+var address = ""
+//var address = "0xd89b9dd60a69f84e646389f61b7556d5dc218355"
+var lastTransactionHash
 var hash = ""
 var message = ""
 var difficulty
@@ -21,52 +19,73 @@ var idBlock
 var currentNonce
 var nonce
 var timerId 
+var proccess = false
 var proccessing = false
 var events = ""
 
+//var privateKey = "0x42AD5AB5F613AF803AD04CC29282257DEBD8E363A1FA75D56EB1A02AA2357DA6"
+var privateKey
+
+
+
 const App = {
   start: function () {
-    const self = this
+  const self = this
 
-    // Bootstrap the MetaCoin abstraction for Use.
-    
-    Storage.setProvider(web3.currentProvider)
+  contractMining = new web3.eth.Contract(ABI, address)
 
-    // Get the initial account balance so it can be displayed.
-    web3.eth.getAccounts(function (err, accs) {
-      if (err != null) {
-        alert('There was an error fetching your accounts.')
-        return
+  console.log("contractMining.events.newHash()")
+  console.log(contractMining.events.newHash)
+  contractMining.events.newHash()
+  .on("data", function(event) {
+    let events = event.returnValues;
+    console.log("event");
+    console.log(event);
+    console.log(events);
+  }).on("error", console.error);
+
+  },
+
+  getAddress: function() {
+    privateKey = $("#privateKey").val();
+    account = web3.eth.accounts.privateKeyToAccount(privateKey).address
+    console.log("Current account " + account)
+    $("#address").html(account);
+  },
+
+  getEvents: function() {
+    contractMining.getPastEvents("newHash", { fromBlock: Number($("#findBlock").val()), toBlock: "latest" })
+    .then(function(result) {
+      console.log("getPastEvents: " + result.length);
+      console.log(result);
+
+      events = ""
+      for (var i = 0; i < result.length; i++)
+      {
+        console.log(result[i]);
+        console.log(result[i].returnValues);
+      events += i + "<br>hash: " + result[i].returnValues._hash + "<br> str: " + result[i].returnValues._str + "<br> sender: " + result[i].returnValues._sender + "<br> salt: " + result[i].returnValues._nonce + "<br> idBlock: " + Number(result[i].returnValues._idBlock) + "<br><br>";
       }
-
-      if (accs.length === 0) {
-        alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.")
-        return
-      }
-
-      accounts = accs
-      account = accounts[0]
-    })
-
-    address = "0xa98c686af06a006a9639355ea02f4e28403e3e7a"
-    Storage.at(address);
-
-  var myContractInstance = Storage.at(address);
-  var myEvent = myContractInstance.newHash();
-  myEvent.watch(function(error, result){
-  if (!error)
-  {
-    events += result.args._hash + "\t" + result.args._str + "\t" + result.args._sender + "\t" + result.args._nonce + "\t" + Number(result.args._idBlock) + "\n" + "\n";
-    $("#events").html(events);
-  }
-  });
+      
+      $("#events").html(events);
+    });
   },
 
   findHash: function() {
+    contractMining.methods.getDifficulty().call({from: account}, function(err, result){
+      if (err != null) {
+        console.log("error:")
+        console.log(err)
+        return
+      }
+      result = Number(result)
+      difficulty = result
+  })
 
     var appropriate = false
     var hashTmp
     var str = message + idBlock.toString() + currentNonce;
+    console.log("difficulty " + difficulty)
     
 		while (!appropriate){
       nonce = App.makeRandomId()
@@ -77,19 +96,23 @@ const App = {
         if (hashTmp.charAt(i) != "f") {
           appropriate = false
         }
-      }
-      
+      }     
     }
       return hashTmp;
   },
 
   getParam: function() {
-    var tmp;
+    if (account == null)
+    {
+      console.log("address not authorized")
+      return
+    }
 
     $("#param").html(account);
 
     web3.eth.getBlockNumber(function (err, accs) {
       if (err != null) {
+        console.log("error");
         console.log(err);
         return
       }
@@ -100,39 +123,37 @@ const App = {
     })
 
 
-    Storage.at(address).then(function(instance){
-      tmp=instance;
 
-      return tmp.getDifficulty({from: account})
-      }).then(function (str) {
-      str = Number(str)
-      $("#param4").html(str);
-      difficulty = str
-      }).catch(function(e) {
-      console.log(e);
-      });
+    contractMining.methods.getDifficulty().call({from: account}, function(err, result){
+      if (err != null) {
+        console.log("error:")
+        console.log(err)
+        return
+      }
+      result = Number(result)
+      $("#param4").html(result);
+      difficulty = result
+  })
 
-    Storage.at(address).then(function(instance){
-      tmp=instance;
+  contractMining.methods.getCurrentNonce().call({from: account}, function(err, result){
+    if (err != null) {
+      console.log("error:")
+      console.log(err)
+      return
+    }
+    $("#param5").html(result);
+    currentNonce = result
+  })
 
-      return tmp.getCurrentNonce({from: account})
-      }).then(function (str) {
-        $("#param5").html(str);
-        currentNonce = str
-      }).catch(function(e) {
-        console.log(e);
-      });
-
-    Storage.at(address).then(function(instance){
-      tmp=instance;
-  
-      return tmp.getMessage({from: account})
-      }).then(function (str) {
-        $("#param6").html(str);
-        message = str
-      }).catch(function(e) {
-        console.log(e);
-      });
+  contractMining.methods.getMessage().call({from: account}, function(err, result){
+    if (err != null) {
+      console.log("error:")
+      console.log(err)
+      return
+    }
+    $("#param6").html(result);
+    message = result
+  })
   },
 
   makeRandomId: function() {
@@ -144,8 +165,15 @@ const App = {
   },
 
   mining: function() {
+
+    if (account == null)
+    {
+      console.log("address not authorized")
+      return
+    }
+
     if (!proccessing) {
-      timerId = setInterval(App.proccess, 10000)
+      timerId = setInterval(App.proccess, 5000)
       proccessing = true
     }
     else {
@@ -157,56 +185,218 @@ const App = {
 
 
   proccess: function() {
+    if (proccess)
+    {
+      return
+    }
 
-    hash = App.findHash()  		
-    var tmp;
+    proccess = true
 
-    App.mining()
-    Storage.at(address).then(function(instance){
-    tmp=instance;
-    var sendHash = "0x" + hash
+    if (account == null)
+    {
+      console.log("address not authorized")
+      return
+    }
+    hash = "0x" + App.findHash()  		
 
-    return tmp.proofOfWork(nonce, sendHash, {from: account})
-    }).then(function (access) {
-        console.log("access");
-        console.log(access);
-    }).catch(function(e) {
-      console.log(e);
+    console.log("proccessing")
+    console.log(nonce)
+    console.log(hash)
+
+    var query = contractMining.methods.proofOfWork(nonce, hash);
+    var encodedABI = query.encodeABI();
+    var tx = {
+      from: account,
+      to: address,
+      gas: 1000000,
+      gasPrice: 5000000000,
+      data: encodedABI,
+    };
+    console.log("tx proofOfWork")
+    console.log(tx)
+
+    web3.eth.accounts.signTransaction(tx, privateKey).then(signed => {
+      const tran = web3.eth
+        .sendSignedTransaction(signed.rawTransaction)
+        .on('confirmation', (confirmationNumber, receipt) => {
+          console.log('=> confirmation: ' + confirmationNumber);
+        })
+        .on('transactionHash', hash => {
+          console.log('=> hash ' + hash);
+          lastTransactionHash = hash
+        })
+        .on('receipt', receipt => {
+          console.log('=> reciept');
+          console.log(receipt);
+        })
+        .on('error', console.error);
     });
-
-    App.mining()
-
-
+    proccess = false
+    return lastTransactionHash
   }
 }
 
 window.App = App
 
 window.addEventListener('load', function () {
-  // Checking if Web3 has been injected by the browser (Mist/MetaMask)
-  if (typeof web3 !== 'undefined') {
-    console.warn(
-      'Using web3 detected from external source.' +
-      ' If you find that your accounts don\'t appear or you have 0 MetaCoin,' +
-      ' ensure you\'ve configured that source properly.' +
-      ' If using MetaMask, see the following link.' +
-      ' Feel free to delete this warning. :)' +
-      ' http://truffleframework.com/tutorials/truffle-and-metamask'
-    )
-    // Use Mist/MetaMask's provider
-    window.web3 = new Web3(web3.currentProvider)
-  } else {
-    console.warn(
-      'No web3 detected. Falling back to http://127.0.0.1:7545.' +
-      ' You should remove this fallback when you deploy live, as it\'s inherently insecure.' +
-      ' Consider switching to Metamask for development.' +
-      ' More info here: http://truffleframework.com/tutorials/truffle-and-metamask'
-    )
-    // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-    window.web3 = new Web3(new Web3.providers.HttpProvider('http://127.0.0.1:7545'))
-  }
+
+  provider = new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/070553663a3b425f93c5ad2b9590ca95')
+
+  console.log("web3")
+
+  console.log(provider)
+  window.web3 = new Web3()
+  window.web3.setProvider(provider)
+  window.web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
+
+  console.log(window.web3)
 
   App.start()
 })
 
 
+const ABI = [
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "nonce",
+				"type": "string"
+			},
+			{
+				"name": "_newHash",
+				"type": "bytes32"
+			}
+		],
+		"name": "proofOfWork",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bytes32"
+			},
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getCurrentChallenge",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getTimeOfLastProof",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getCurrentNonce",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getDifficulty",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getMessage",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "_hash",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"name": "_str",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"name": "_sender",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "_nonce",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"name": "_idBlock",
+				"type": "uint256"
+			}
+		],
+		"name": "newHash",
+		"type": "event"
+	}
+]

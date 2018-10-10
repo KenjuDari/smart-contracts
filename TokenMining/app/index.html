@@ -8,7 +8,15 @@
 </head>
 <body>
   <h1>Token Mining</h1>
+
   <div class="section">
+    Введите Private Key <input type="text" id="privateKey" value="0x..." />  <br>
+    <button id='setParam' onclick="App.getAddress()">Войти</button><br>
+    Авторизован: <output type="text" id="address" value=""> </output><br><br>
+  </div>
+
+  <div class="section">
+      <h2>Инфо</h2>
     Address of sender: <output type="text" id="param" value=""> </output><br>
     Last block: <output type="text" id="param2" value=""> </output><br>
     100th last block: <output type="text" id="param3" value=""> </output><br>
@@ -17,11 +25,12 @@
     Message: <output type="text" id="param6" value=""> </output><br>
 
       <button id='setParam' onclick="App.getParam()">Получить текущие данные</button><br>
-      <button id='setParam' onclick="App.mining()">Запустить/остановить майнинг</button><br>
+      <button id='setParam2' onclick="App.mining()">Запустить/остановить майнинг</button><br><br>
   </div>
 
   <h2>Генерация хешей</h2>
   <div class="section">
+      <button id='setParam2' onclick="App.getEvents()">Получить</button> хеши начиная с блока <input type="text" id="findBlock" value="0" />  <br>
       <output type="text" id="events" value=""> </output><br>
     </div>
   <hr>
