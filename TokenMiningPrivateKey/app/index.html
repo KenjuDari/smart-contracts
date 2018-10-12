@@ -10,13 +10,13 @@
   <h1>Token Mining</h1>
 
   <div class="section">
-    Введите адрес своего кошелька <input type="text" id="publicKey" value="0x..." />  <br>
+    Введите Private Key <input type="text" id="privateKey" value="0x..." />  <br>
     <button id='setParam' onclick="App.getAddress()">Войти</button><br>
     Авторизован: <output type="text" id="address" value=""> </output><br><br>
   </div>
 
   <div class="section">
-    <h2>Инфо</h2>
+      <h2>Инфо</h2>
     Address of sender: <output type="text" id="param" value=""> </output><br>
     Last block: <output type="text" id="param2" value=""> </output><br>
     100th last block: <output type="text" id="param3" value=""> </output><br>
@@ -30,15 +30,9 @@
 
   <h2>Генерация хешей</h2>
   <div class="section">
-      <button id='setParam3' onclick="App.getEvents()">Получить</button> хеши начиная с блока <input type="text" id="findBlock" value="0" />  <br>
-      <output type="text" id="events" value=""> </output><br><br>
+      <button id='setParam2' onclick="App.getEvents()">Получить</button> хеши начиная с блока <input type="text" id="findBlock" value="0" />  <br>
+      <output type="text" id="events" value=""> </output><br>
     </div>
-
-    <h2>Вознаграждение</h2>
-    <div class="section">
-        <button id='setParam4' onclick="App.getRewards()">Получить</button> награды начиная с блока <input type="text" id="findBlock" value="0" />  <br>
-        <output type="text" id="events2" value=""> </output><br><br>
-      </div>
   <hr>
 </body>
 </html>
