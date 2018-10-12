@@ -4,11 +4,6 @@ import '../styles/app.css'
 // Import libraries we need.
 import { default as Web3 } from 'web3'
 import { keccak256 } from 'js-sha3'
-import { default as contract } from 'truffle-contract'
-
-import Token_artifacts from '../../build/contracts/SimpleTokenCoin.json'
-
-var contractToken = contract(Token_artifacts)
 
 var contractMining
 
@@ -42,9 +37,6 @@ const App = {
   const self = this
 
   contractMining = new web3.eth.Contract(ABI, address)
-
-  contractToken.setProvider(provider)
-  contractToken.at(addressToken)
 
   account = web3.eth.accounts.privateKeyToAccount(privateKey).address
   console.log("Current account " + account)
